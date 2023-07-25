@@ -1,0 +1,130 @@
+package com.example.tutron;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+public class Tutor extends AppCompatActivity {
+    EditText  firstName, lastName, educationLevel, emailAddress, password, language, description;
+    ImageButton backTutorBtn;
+    Button createTutorBtn;
+    FirebaseDatabase database;
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://tutronapp-6a724-default-rtdb.firebaseio.com/");
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        //generate a test complaint
+//        String id = databaseReference.push().getKey();
+//        Complaint a = new Complaint(id, "This is a test complaint. I don't like my Tutor, he sucks. Give me new one! I want my money BACK!!!! I got bad grade.... Bla bla..adfajdf;lajdfl;ajdfljal;kdjfal;sjdflajdfl;jasdl;kfjals;djf;alksdjfla;ksdjflkajsdl;fkjasld;jfal;ksdjfl;kajsdlf;kjasldk;fjalksdjflkajsdlfkjalksdjflak;sdjfl;ajsdfl;kajsdfl;kjasdlkfjalds;kjfal;sdjflajdfl;kajdslf;kjasdl;kfjal;sdjfl;ajsd;flakjdsfl;kajsd;lfkjasdl;kfjaldks;jfl;kasdjflasjf", "testStudentEmail@gmail.com", "testTutorEmail@gmail.com");
+//        assert id != null;
+//        databaseReference.child("Complaints").child(id).setValue(a);
+        //generate a test Review
+//        String id = databaseReference.push().getKey();
+//        Review b = new Review(id, "This tutor is ok, not the best but just ok...", "testStudentEmail@gmail.com", "testTutorEmail@gmail.com", "french", 2.5);
+//        assert id != null;
+//        databaseReference.child("Reviews").child(id).setValue(b);
+        //generate a test ownedTopic for student
+        String tutorName = "Shawhin";
+        String topic = "french";
+        String tutorEmailAddress = "testTutorEmail@gmail.com";
+        Topic p = new Topic(tutorName, topic, tutorEmailAddress);
+        databaseReference.child("Users/testStudentEmail@gmail,com/OwnedTopics").child(topic).setValue(p);
+
+
+
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_tutor);
+
+        firstName = findViewById(R.id.tutorFirstName);
+        lastName = findViewById(R.id.tutorLastName);
+        educationLevel = findViewById(R.id.educationLevel);
+        emailAddress = findViewById(R.id.tutorEmailAddress);
+        password = findViewById(R.id.tutorPassword);
+        language = findViewById(R.id.nativeLanguage);
+        description = findViewById(R.id.description);
+
+        backTutorBtn = findViewById(R.id.tutorBackButton);
+        backTutorBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent backIntent = new Intent(Tutor.this, GetTutorOrStudent.class);
+                startActivity(backIntent);
+                finish();
+            }
+        });
+
+        createTutorBtn = findViewById(R.id.tutorCreateButton);
+        createTutorBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String firstNameTemp = firstName.getText().toString().trim();
+                String lastNameTemp = lastName.getText().toString().trim();
+                String educationTemp = educationLevel.getText().toString().trim();
+                //Replacing "." with "," since we are using the email as a key
+                String emailTemp = emailAddress.getText().toString().trim().replace(".", ",");
+                String passwordTemp = password.getText().toString().trim();
+                String languageTemp = language.getText().toString().trim();
+                String descriptionTemp = description.getText().toString();
+                Boolean dataSaved = false;
+
+                if (!TextUtils.isEmpty(firstNameTemp) && !TextUtils.isEmpty(lastNameTemp)
+                        && !TextUtils.isEmpty(educationTemp) && !TextUtils.isEmpty(emailTemp) && !TextUtils.isEmpty(passwordTemp)
+                        && !TextUtils.isEmpty(languageTemp) && !TextUtils.isEmpty(descriptionTemp)) {
+                    dataSaved = true;
+                } else {
+                    Toast.makeText(Tutor.this, "Failed. All fields must be filled in.", Toast.LENGTH_SHORT).show();
+                }
+                if(dataSaved){
+                    //Check if the username has already existed.
+                    databaseReference.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if(snapshot.hasChild(emailTemp)){
+                                Toast.makeText(Tutor.this, "This email has already existed! Please try again", Toast.LENGTH_SHORT).show();
+                            }
+                            else{
+
+                                TutorAccount t = new TutorAccount(firstNameTemp, lastNameTemp, emailTemp, passwordTemp, educationTemp, languageTemp, descriptionTemp);
+
+                                databaseReference.child("Users").child(emailTemp).setValue(t);
+                                databaseReference.child("Users").child(emailTemp).child("type").setValue(t.getTYPE());
+
+
+                                //database = FirebaseDatabase.getInstance();
+                                //reference = database.getReference("users");
+                                //HelperClass helperClass = new HelperClass(userNameTemp, passwordTemp, "Tutor");
+                                //reference.child(userNameTemp).setValue(helperClass);
+
+                                Toast.makeText(Tutor.this, "Registration successful!", Toast.LENGTH_SHORT).show();
+                                Intent register = new Intent(Tutor.this, MainActivity.class);
+                                startActivity(register);
+                                finish();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
+                }
+            }
+        });
+    }
+}

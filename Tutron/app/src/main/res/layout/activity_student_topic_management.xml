@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
+    android:orientation="vertical"
+    tools:context=".StudentTopicManagement">
+
+    <EditText
+        android:id="@+id/editTextTutorName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tutor Name"
+        android:inputType="text"
+        android:text="" />
+
+    <EditText
+        android:id="@+id/editTextLanguage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Language Spoken"
+        android:inputType="text"
+        android:text="" />
+
+    <EditText
+        android:id="@+id/editTextTopic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Topic"
+        android:inputType="text"
+        android:text="" />
+
+    <Button
+        android:id="@+id/searchBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Search" />
+
+    <TextView
+        android:layout_marginTop="32dp"
+        android:id="@+id/searchResultsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search Results"
+        android:layout_gravity="center_horizontal"
+        android:textStyle="bold"
+        android:textSize="24dp" />
+
+    <ListView
+        android:id="@+id/tutorSearchResults"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clickable="true" />
+
+    <Button
+        android:id="@+id/backBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:layout_gravity="start"
+        android:layout_margin="16dp" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>
